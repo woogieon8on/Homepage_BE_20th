@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(!*i35i)5t4jsnt-k2h^tuq(*dtp=v20ncm)37ib^^pn)r&j7z'
+SECRET_KEY = 'django-insecure-wf+#66b*9^o95fbhys1@^#qrrg62y70s_-c!@ebm&fmn)2&gk7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,18 +29,30 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 AUTH_USER_MODEL = 'users.User'
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.app.UsersConfig',
-    'debug_toolbar',
+    'django.contrib.sites',
 ]
+PROJECT_APPS = [
+    "users",
+]
+THIRD_APPS = [
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account'
+]
+
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -124,3 +136,49 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated", ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    'EXCEPTION_HANDLER': 'kahluaproject.exceptions.custom_exception_handler',
+}
+
+# JWT_AUTH = {
+#     'JWT_PAYLOAD_HANDLER':
+#     'rest_framework_jwt.utils.jwt_payload_handler',
+
+#     'JWT_ENCODE_HANDLER': 
+#     'rest_framework_jwt.utils.jwt_encode_handler',
+
+#     'JWT_DECODE_HANDLER': 
+#     'rest_framework_jwt.utils.jwt_decode_handler',
+
+#     'JWT_PAYLOAD_GET_USER_ID_HANDLER':
+#     'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+
+#     'JWT_RESPONSE_PAYLOAD_HANDLER':
+#     'rest_framework_jwt.utils.jwt_response_payload_handler',
+
+#     'JWT_SECRET_KEY': 'SECRET_KEY',
+#     'JWT_GET_USER_SECRET_KEY': None,
+#     'JWT_PUBLIC_KEY': None,
+#     'JWT_PRIVATE_KEY': None,
+#     'JWT_ALGORITHM': 'HS256',
+#     'JWT_VERIFY': True,
+#     'JWT_VERIFY_EXPIRATION': True,
+#     'JWT_LEEWAY': 0,
+#     'JWT_EXPIRATION_DELTA': timedelta(days=30),
+#     'JWT_AUDIENCE': None,
+#     'JWT_ISSUER': None,
+
+#     'JWT_ALLOW_REFRESH': False,
+#     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
+
+#     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+#     'JWT_AUTH_COOKIE': None,
+# }
