@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -84,3 +84,16 @@ class LoginView(GenericAPIView):
                 'status': 'success',
                 'data': response,
             }, status=status.HTTP_200_OK)
+    
+class UserInfoView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_id='내정보조회',
+    )
+    def retrieve(self, request, *args, **kwargs):
+        # 현재 로그인한 사용자 정보 가져오기
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
