@@ -3,11 +3,14 @@ from . import models
 
 # Register your models here.
 
-@admin.register(models.Category)
-class CategoryAdmin(admin.ModelAdmin):
+@admin.register(models.GeneralTicket)
+class GeneralTicketAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(models.Ticketing)
-class TicketingAdmin(admin.ModelAdmin):
+@admin.register(models.FreshmanTicket)
+class FreshmanTicketAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(models.Participant)
+class ParticipantAdmin(admin.ModelAdmin):
+    pass

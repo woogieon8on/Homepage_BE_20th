@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView, UpdateAPIView
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -62,8 +62,30 @@ class LoginView(GenericAPIView):
         AllowAny,
     ]
 
+    class Meta:
+        examples = {
+            'email':'kahluaband@gmail.com',
+            'password': 'kahlua!',
+        }
+
     @swagger_auto_schema(
-        operation_id='로그인'
+        operation_id='로그인',
+        operation_description='''
+            email과 password를 전달받아서 로그인을 진행합니다.<br/>
+        ''',
+        responses={
+            "200": openapi.Response(
+                description="OK",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                    }
+                }
+            ),
+            "400": openapi.Response(
+                description="Bad Request",
+            ),
+        },
     )
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -75,6 +97,7 @@ class LoginView(GenericAPIView):
                     'message': '이메일을 입력해주세요.',
                     'code': 404,
                 }, status=status.HTTP_404_NOT_FOUND)
+            
             response = {
                 'access': serializer.validated_data['access'],
                 'refresh': serializer.validated_data['refresh'],

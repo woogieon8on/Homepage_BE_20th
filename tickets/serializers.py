@@ -1,30 +1,23 @@
 
 from rest_framework import serializers
 
-from .models import Ticketing
+from .models import GeneralTicket, FreshmanTicket
 
-class TicketDetailSerializer(serializers.ModelSerializer):
+class GeneralTicketDetailSerializer(serializers.ModelSerializer):
+    # price = serializers.SerializerMethodField()
+
     class Meta:
-        model = Ticketing
+        model = GeneralTicket
         ordering = ['-id']
         fields = [
-            'category',
+            'id',
             'buyer',
             'phone_num',
-            'email',
             'member',
+            'price',
         ]
 
     def create(self, validated_data):
-        return super().create(validated_data)
-    
-class QRCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ticketing
-        fields = [
-            'category',
-            'buyer',
-            'phone_num',
-            'member',
-            'qrcode',
-        ]
+        ticket = GeneralTicket.objects.create(**validated_data)
+
+        return ticket
