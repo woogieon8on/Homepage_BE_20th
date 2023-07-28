@@ -43,6 +43,7 @@ PROJECT_APPS = [
     "users",
     "tickets",
     "core",
+    "application"
 ]
 THIRD_APPS = [
     'rest_framework',
