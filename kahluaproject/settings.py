@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-wf+#66b*9^o95fbhys1@^#qrrg62y70s_-c!@ebm&fmn)2&gk7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -52,7 +52,10 @@ THIRD_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'allauth',
-    'allauth.account'
+    'allauth.account',
+    'drf_yasg',
+    'debug_toolbar',
+    'corsheaders',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_APPS
@@ -60,6 +63,7 @@ INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_APPS
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'kahluaproject.urls'
@@ -167,6 +172,11 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,  # true면 토큰 갱신 시 refresh도 같이 갱신
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+# PORTONE_KEY = '6558725881621285'
+# PORTONE_SECRET = 'q3kGbRfqy7wE9uHwWewRID1kcm4K8T9ffjjPON7OK28keVM0LVjmesZUFdKu8IM2YGh8CeQRjmcdM3oH'
 
 # JWT_AUTH = {
 #     'JWT_PAYLOAD_HANDLER':

@@ -1,7 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from .views import base_views, email_auth
-from rest_framework.authtoken.views import obtain_auth_token
 
 app_name = "users"
 
@@ -13,4 +12,5 @@ urlpatterns = [
          email_auth.UserActivateView.as_view(), name='activate'),
     path('login/', base_views.LoginView.as_view(), name='login'),
     path('retrieve/', base_views.UserInfoView.as_view(), name='retrieve'),
+    # path('update/', base_views.UserUpdateView.as_view(), name='update'),
 ]

@@ -13,9 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,3 +28,34 @@ urlpatterns = [
     path('users/', include('allauth.urls')),
     path('tickets/', include('tickets.urls')),
 ]
+
+# API 문서에 작성될 소개 내용
+schema_view = get_schema_view(
+    openapi.Info(
+        title='KAHLUABAND OPEN API',
+        default_version='v1',
+        description='''
+            안녕하세요. KAHLUABAND OPEN API 문서 페이지입니다.
+        ''',
+        terms_of_service='',
+        contact=openapi.Contact(name='KAHLUA_BAND', email='hcbkahlua@gmail.com'),
+        license=openapi.License(name='KAHLUA_BAND')
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+    patterns=urlpatterns,
+)
+
+urlpatterns += [
+    path('swagger<str:format>', schema_view.without_ui(
+        cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger',
+         cache_timeout=0), name='schema-swagger-ui'),
+    path('docs/', schema_view.with_ui('redoc',
+         cache_timeout=0), name='schema-redoc'),
+]
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]

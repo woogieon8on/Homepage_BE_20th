@@ -17,3 +17,14 @@ class TicketDetailSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return super().create(validated_data)
+    
+class QRCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticketing
+        fields = [
+            'category',
+            'buyer',
+            'phone_num',
+            'member',
+            'qrcode',
+        ]

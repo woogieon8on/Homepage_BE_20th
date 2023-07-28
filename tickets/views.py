@@ -10,7 +10,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from .models import Ticketing
-from .serializers import TicketDetailSerializer
+from .serializers import TicketDetailSerializer, QRCodeSerializer
 
 #serializer에 partial=True를 주기위한 Mixin
 class SetPartialMixin:
@@ -42,3 +42,9 @@ class TicketPurchaseView(viewsets.ModelViewSet):
     
 
 # 구매자 정보 조회는 로그인 시에만 가능
+
+# class CreateQRCodeView(APIView):
+#     serializer_class = QRCodeSerializer
+
+#     def post(self, request):
+#         serializer = QRCodeSerializer(data=request.data)
