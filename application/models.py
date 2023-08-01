@@ -2,14 +2,14 @@ from django.db import models
 from core.models import TimeStampedModel
 
 class ApplyForm(TimeStampedModel):
-
+    """GENER CHOICE"""
     MALE = '남성'
     FEMALE = '여성'
     GENDER_CHOICES = [
         (MALE, '남성'),
         (FEMALE, '여성'),
     ]
-
+    """PREFERENCE_CHOICES"""
     VOCAL = '보컬'
     DRUM = '드럼'
     GUITAR = '기타'
@@ -24,6 +24,7 @@ class ApplyForm(TimeStampedModel):
     ]
 
     name = models.CharField(max_length=20)   # 지원자 이름
+    phone_num = models.CharField(max_length=13, null=True)   # 전화번호('-'없는 상태로 입력받기)
     birthdate = models.DateField(blank=True)   # 생년월일
     gender = models.CharField(choices=GENDER_CHOICES, max_length=20, blank=True)   # 성별
     address = models.CharField(max_length=200)   # 거주지

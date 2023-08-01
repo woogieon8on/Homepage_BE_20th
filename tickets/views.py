@@ -103,7 +103,7 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                         "status": "success",
                         "data": {'id': 1,
                                  'buyer':'깔루아1',
-                                 'phone_num':'010-6337-5958',
+                                 'phone_num':'010-1234-5678',
                                  'member':'3',
                                  'price':'15000'
                                 }

@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/', include('dj_rest_auth.urls')),
     path('users/', include('allauth.urls')),
     path('tickets/', include('tickets.urls')),
+    path('application/', include('application.urls')),
 ]
 
 # API 문서에 작성될 소개 내용
