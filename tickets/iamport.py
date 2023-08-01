@@ -5,15 +5,14 @@ from django.conf import settings
 #포트원 서버와 통신하기 위한 토큰을 받아오는 함수
 def get_token():
     access_data = {
-        'imp_key': settings.PORTONE_KEY,
-        'imp_secret': settings.PORTONE_SECRET,
+        'imp_key': settings.IAMPORT_KEY,
+        'imp_secret': settings.IAMPORT_SECRET,
     }
 
     url = "https://api.iamport.kr/users/getToken"
 
     req = requests.post(url, data=access_data)
     access_res = req.json()
-    print('access_res', access_res)
 
     if access_res['code'] == 0:
         return access_res['response']['access_token']
@@ -22,14 +21,14 @@ def get_token():
 
 #결제 준비 함수
 #포트원에 미리 정보를 전달하여 어떤 주문 번호로 얼마를 결제할 지 미리 전달하는 역할
-def payments_prepare(order_id, *args, **kwargs):
+def payments_prepare(order_id, amount, *args, **kwargs):
     access_token = get_token()
+
     if access_token:        #token이 존재하는 경우
         access_data = {
             'merchant_uid': order_id,
-            # 'amount': amount,
+            'amount': amount,
         }
-        print('access:', access_token, access_data)
 
         url = "https://api.iamport.kr/payments/prepare"
         headers = {
@@ -37,9 +36,7 @@ def payments_prepare(order_id, *args, **kwargs):
         }
 
         req = requests.post(url, data=access_data, headers=headers)
-        print('req22', req)
         res = req.json()
-        print('res22', res)
 
         if res['code'] != 0:
             raise ValueError("API 통신 오류")
@@ -61,7 +58,7 @@ def find_transaction(order_id, *args, **kwargs):
             context = {
                 'imp_id': res['response']['imp_uid'],
                 'merchant_order_id': res['response']['merchant_uid'],
-                # 'amount': res['response']['amount'],
+                'amount': res['response']['amount'],
                 'status': res['response']['status'],
                 'type': res['response']['pay_method'],
                 'receipt_url': res['response']['receipt_url'],

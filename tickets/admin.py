@@ -14,3 +14,7 @@ class FreshmanTicketAdmin(admin.ModelAdmin):
 @admin.register(models.Participant)
 class ParticipantAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(models.OrderTransaction)
+class OrderTransactionAdmin(admin.ModelAdmin):
+    pass
