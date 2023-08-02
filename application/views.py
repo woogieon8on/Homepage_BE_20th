@@ -62,10 +62,15 @@ class ApplyCreateView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
+            print('save')
 
+            return Response({
+                'status': 'Success',
+                'data': serializer.data,
+            }, status=status.HTTP_201_CREATED)
+        
         return Response({
-            'status': 'Success',
-            'data': serializer.data,
-        }, status=status.HTTP_201_CREATED)
+            'status':'error'
+        }, status=status.HTTP_400_BAD_REQUEST)
