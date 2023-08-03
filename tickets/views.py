@@ -12,7 +12,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from .models import GeneralTicket, FreshmanTicket, Participant, OrderTransaction
-from .serializers import GeneralTicketDetailSerializer
+from .serializers import GeneralTicketDetailSerializer, FreshmanTicketDetailSerializer, OrderCompleteDetailSerializer
 
 # import traceback
 
@@ -21,6 +21,63 @@ class SetPartialMixin:
     def get_serializer_class(self, *args, **kwargs):
         serializer_class = super().get_serializer_class(*args, **kwargs)
         return partial(serializer_class, partial=True)
+
+
+class FreshmanTicketOrderView(viewsets.ModelViewSet):
+    queryset = FreshmanTicket.objects.all()
+    serializer_class = FreshmanTicketDetailSerializer
+    permission_classes = (AllowAny, )
+
+    class Meta:
+        examples = {
+            'buyer': '신입생1',
+            'phone_num': '010-1234-5678',
+            'major': '컴퓨터공학과',
+            'student_id': 'C411111',
+            'meeting': True,
+        }
+
+    @swagger_auto_schema(
+        operation_id='신입생 티켓 구매 관련 정보 입력',
+        operation_description='''
+            신입생의 경우 1인 1매로 제한되므로 예매자의 정보만 입력받고 있습니다.<br/>
+            신입생 확인을 위해 예매 시 학과와 학번을 입력 받고, 현장에서 학생증으로 학과와 학번이 맞는지 확인합니다.<br/>
+        ''',
+        responses={
+            "200": openapi.Response(
+                description="OK",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "data": {'id': 1}
+                    }
+                }
+            ),
+            "400": openapi.Response(
+                description="Bad Request",
+            ),
+        }
+    )
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print('ser', serializer)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            print('save')
+
+            return Response({
+                'status': 'success',
+                'data': serializer.data,
+            }, status=status.HTTP_201_CREATED)
+        print(traceback.format_exc())
+        
+        return Response({
+            'status':'error',
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # def delete(self, request):
+        
 
 
 class GeneralTicketOrderView(viewsets.ModelViewSet):
