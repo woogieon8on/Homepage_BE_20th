@@ -21,15 +21,3 @@ class GeneralTicketDetailSerializer(serializers.ModelSerializer):
         ticket = GeneralTicket.objects.create(**validated_data)
 
         return ticket
-    
-
-class FreshmanTicketDetailSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = FreshmanTicket
-        ordering = ['-id']
-        fields = '__all__'
-
-    def create(self, validated_data):
-        return FreshmanTicket.objects.create(**validated_data)
-    
