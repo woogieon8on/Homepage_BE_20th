@@ -11,6 +11,7 @@ urlpatterns = [
     path('activate/<str:uid>/<str:token>',
          email_auth.UserActivateView.as_view(), name='activate'),
     path('login/', base_views.LoginView.as_view(), name='login'),
+    path('logout/', base_views.LogoutView.as_view(), name='logout'),
     path('retrieve/', base_views.UserInfoView.as_view(), name='retrieve'),
     # path('update/', base_views.UserUpdateView.as_view(), name='update'),
 ]

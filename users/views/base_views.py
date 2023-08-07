@@ -108,6 +108,26 @@ class LoginView(GenericAPIView):
                 'data': response,
             }, status=status.HTTP_200_OK)
     
+class LogoutView(GenericAPIView):
+    
+    permission_classes = (IsAuthenticated,) #인증된 요청에 한해서 뷰 호출 허용(로그인 되어있어야만 접근 허용)
+    serializer_class = UserLoginSerializer
+
+    def post(self, request):
+        try: #refresh 토큰을 블랙리스트에 저장
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({
+                'status' : 'success',
+            }, status=status.HTTP_205_RESET_CONTENT) #사용자에게 이 요청을 보낸 문서를 재설정하도록
+        except:
+            return Response({
+                'status' : 'error',
+                'code' : 404,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+
 class UserInfoView(RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
