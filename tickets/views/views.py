@@ -11,8 +11,8 @@ from rest_framework.response import Response
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from .models import GeneralTicket, FreshmanTicket, Participant, OrderTransaction
-from .serializers import GeneralTicketDetailSerializer, FreshmanTicketDetailSerializer
+from ..models import GeneralTicket, FreshmanTicket, Participant, OrderTransaction
+from ..serializers import GeneralTicketDetailSerializer, FreshmanTicketDetailSerializer
 
 # import traceback
 
@@ -67,7 +67,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
             return Response({
                 'status': 'success',
                 'data': serializer.data,
-            }, status=status.HTTP_201_CREATED)
+            }, status=status.HTTP_200_OK)
         
         return Response({
             'status':'error',
@@ -107,7 +107,13 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                 examples={
                     "application/json": {
                         "status": "success",
-                        "data": {'id': 1}
+                        "data": {'id': 1,
+                                 'buyer':'깔루아1',
+                                 'phone_num':'010-1234-5678',
+                                 'member':'3',
+                                 'price':'15000',
+                                 'reservation_id': 'ABCDE12345',
+                                },
                     }
                 }
             ),
@@ -122,7 +128,7 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         phone_list = order_info.getlist('phone')
         
         serializer = self.get_serializer(data=order_info)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             new_order = serializer.save()
 
             mem = dict(zip(name_list, phone_list))
@@ -130,20 +136,22 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
             for key, value in mem.items():
                 mem = Participant(name=key, phone_num=value, general_ticket=new_order)
                 mem.save()
-        
+
             return Response({
                 'status': 'success',
-                'data': new_order.id,
-            }, status=status.HTTP_201_CREATED)
+                'data': serializer.data,
+            }, status=status.HTTP_200_OK)
         
         return Response({
             'status':'error',
         }, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
-        operation_id='주문이 완료된 후 표시하는 View',
+        operation_id='주문이 완료된 후 표시 & 예매 티켓 조회',
         operation_description='''
+            전달된 쿼리 파라미터에 해당하는 예매 정보를 반환합니다.<br/>
             결제를 하고 나서 주문이 완료되었다는 화면을 표시할 때 사용됩니다.<br/>
+            또는 예매 티켓을 조회하는 경우 예매번호를 입력하여 예매 내역을 확인합니다.<br/>
             주문 번호에 해당하는 결제 완료 화면을 보여줍니다.<br/>
         ''',
         responses={
@@ -156,7 +164,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                                  'buyer':'깔루아1',
                                  'phone_num':'010-1234-5678',
                                  'member':'3',
-                                 'price':'15000'
+                                 'price':'15000',
+                                 'reservation_id': 'ABCDE12345',
                                 }
                     }
                 }
@@ -167,14 +176,19 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         }
     )
     def get(self, request):
-        order_id = request.query_params.get('order_id')
-        order = GeneralTicket.objects.get(id=order_id)
-        serializer = self.get_serializer(order)
-        
-        return Response({
-                'status': 'success',
-                'data': serializer.data
-            }, status=status.HTTP_200_OK)
+        try:
+            request_id = request.query_params.get('reservation_id')
+            order = GeneralTicket.objects.get(reservation_id=request_id)
+            serializer = self.get_serializer(order)
+            
+            return Response({
+                    'status': 'success',
+                    'data': serializer.data
+                }, status=status.HTTP_200_OK)
+        except:
+            return Response({
+                'status': 'error',
+            }, status=status.HTTP_400_BAD_REQUEST)
     
 
 class OrderCheckoutView(viewsets.ModelViewSet):
