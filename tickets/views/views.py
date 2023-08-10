@@ -71,7 +71,50 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
         
         return Response({
             'status':'error',
-        }, status=status.HTTP_400_BAD_REQUEST)        
+        }, status=status.HTTP_400_BAD_REQUEST)     
+    
+    @swagger_auto_schema(
+        operation_id='신입생 예매 취소',
+        operation_description='''
+            student_id에 해당하는 freshman tickets을 삭제하면서 예매를 취소한다. <br/>
+        ''',
+        responses={
+            "200": openapi.Response(
+                description="OK",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                    }
+                }
+            ),
+            "400": openapi.Response(
+                description="Bad Request",
+            ),
+        }
+
+    )
+
+    def delete(self, request, *args, **kwargs):   
+        student_id = request.POST.get('student_id')
+
+        try:
+            student = FreshmanTicket.objects.get(student_id=student_id)
+            student.delete()
+
+            return Response({
+                'status':'success',
+            },status=status.HTTP_200_OK)
+
+        except FreshmanTicket.DoesNotExist:
+            student = None
+
+            return Response({
+                'status': 'fail',
+                'message': '학번이 존재하지 않습니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+        
 
 
 class GeneralTicketOrderView(viewsets.ModelViewSet):
@@ -303,4 +346,60 @@ class OrderValidationView(viewsets.ModelViewSet):
                 'status':'success',
             },status=status.HTTP_200_OK)
 
+
 # 구매자 정보 조회는 로그인 시에만 가능
+class CancelTicketView(viewsets.ModelViewSet):
+
+    class Meta:
+        examples = {
+            'order_id': 1,
+            'amount': 15000,
+        }
+
+    @swagger_auto_schema(
+        operation_id='예매 취소하는 View',
+        operation_description='''
+            order_id에 해당하는 general tickets를 삭제하고 participants 해당 인원 모두 삭제한다.
+            또한 order transactions 모두 삭제하면서 예매를 취소한다. <br/>
+        ''',
+        responses={
+            "200": openapi.Response(
+                description="OK",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                    }
+                }
+            ),
+            "400": openapi.Response(
+                description="Bad Request",
+            ),
+        }
+
+    )
+
+    def delete(self, request, *args, **kwargs):
+        order_id = request.POST.get('order_id')
+        order = GeneralTicket.objects.get(id=order_id)
+        amount = request.POST.get('amount')
+        
+        try:
+            trans = OrderTransaction.objects.get(
+                order=order,
+                amount=amount,
+            )
+        except:
+            trans = None
+
+        if trans is not None:
+            order.delete() 
+            
+            return Response({
+                'status':'success',
+            },status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'status': 'fail',
+                'message': '주문번호가 존재하지 않습니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
