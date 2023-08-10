@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FreshmanTicketOrderView, GeneralTicketOrderView, OrderCheckoutView, OrderValidationView, CancelTicketView
+from .views.views import FreshmanTicketOrderView, GeneralTicketOrderView, OrderCheckoutView, OrderValidationView, CancelTicketView
 
 app_name = 'tickets'
 

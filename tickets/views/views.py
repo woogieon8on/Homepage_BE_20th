@@ -347,7 +347,6 @@ class OrderValidationView(viewsets.ModelViewSet):
             },status=status.HTTP_200_OK)
 
 
-# 구매자 정보 조회는 로그인 시에만 가능
 class CancelTicketView(viewsets.ModelViewSet):
 
     class Meta:
@@ -357,7 +356,7 @@ class CancelTicketView(viewsets.ModelViewSet):
         }
 
     @swagger_auto_schema(
-        operation_id='예매 취소하는 View',
+        operation_id='일반 예매 취소하는 View',
         operation_description='''
             order_id에 해당하는 general tickets를 삭제하고 participants 해당 인원 모두 삭제한다.
             또한 order transactions 모두 삭제하면서 예매를 취소한다. <br/>
@@ -379,8 +378,8 @@ class CancelTicketView(viewsets.ModelViewSet):
     )
 
     def delete(self, request, *args, **kwargs):
-        order_id = request.POST.get('order_id')
-        order = GeneralTicket.objects.get(id=order_id)
+        reservation_id = request.POST.get('reservation_id')
+        order = GeneralTicket.objects.get(reservation_id=reservation_id)
         amount = request.POST.get('amount')
         
         try:
