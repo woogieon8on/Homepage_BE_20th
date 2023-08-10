@@ -30,6 +30,11 @@ STATE = env('KAHLUA_BE_STATE')
 IAMPORT_KEY = env('IAMPORT_KEY')
 IAMPORT_SECRET = env('IAMPORT_SECRET')
 
+NCP_SERVICE_ID = env('NCP_SERVICE_ID')
+NCP_SECRET_KEY = env('NCP_SECRET_KEY')
+NCP_ACCESS_KEY_ID = env('NCP_ACCESS_KEY_ID')
+
+SENDER_PHONE_NUM = env('SENDER_PHONE_NUM')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
