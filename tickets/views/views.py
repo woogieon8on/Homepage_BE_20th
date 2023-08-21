@@ -11,10 +11,11 @@ from rest_framework.response import Response
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from ..models import GeneralTicket, FreshmanTicket, Participant, OrderTransaction
-from ..serializers import GeneralTicketDetailSerializer, FreshmanTicketDetailSerializer
+from tickets.models import GeneralTicket, FreshmanTicket, Participant, OrderTransaction
+from tickets.serializers import GeneralTicketDetailSerializer, FreshmanTicketDetailSerializer
+from tickets.views.send_msg import send_message
 
-# import traceback
+import traceback
 
 #serializer에 partial=True를 주기위한 Mixin
 class SetPartialMixin:
@@ -239,7 +240,7 @@ class OrderCheckoutView(viewsets.ModelViewSet):
 
     class Meta:
         examples = {
-            'order_id': 1,
+            'reservation_id': 'ABCDE12345',
             'amount': 15000,
         }
 
@@ -266,8 +267,8 @@ class OrderCheckoutView(viewsets.ModelViewSet):
     )
 
     def post(self, request, *args, **kwargs):
-        ticket_id = request.POST.get('ticket_id')
-        order = GeneralTicket.objects.get(id=ticket_id)
+        reservation_id = request.POST.get('reservation_id')
+        order = GeneralTicket.objects.get(reservation_id=reservation_id)
         amount = request.POST.get('amount')
 
         try:
@@ -292,9 +293,11 @@ class OrderCheckoutView(viewsets.ModelViewSet):
 
 
 class OrderValidationView(viewsets.ModelViewSet):
+    permission_classes = (AllowAny, )
+    
     class Meta:
         examples = {
-            'order_id': 1,
+            'reservation_id': 'ABCDE12345',
             'merchant_id': '2abcdefghi',
             'imp_id': '',
             'amount': 15000,
@@ -322,11 +325,13 @@ class OrderValidationView(viewsets.ModelViewSet):
     )
 
     def post(self, request, *args, **kwargs):
-        order_id = request.POST.get('order_id')
-        order = GeneralTicket.objects.get(id=order_id)
+        reservation_id = request.POST.get('reservation_id')
+        order = GeneralTicket.objects.get(reservation_id=reservation_id)
         merchant_id = request.POST.get('merchant_id')
         imp_id = request.POST.get('imp_id')
         amount = request.POST.get('amount')
+
+        # participants = Participant.objects.filter(general_ticket=order.id)
         
         try:
             trans = OrderTransaction.objects.get(
@@ -341,6 +346,12 @@ class OrderValidationView(viewsets.ModelViewSet):
             trans.transaction_id = imp_id
             trans.success = True
             trans.save()
+
+            send_message(name=order.buyer, phone_num=order.phone_num)
+
+            # 참석자 전원에게 문자 보내는 경우
+            # for participant in participants:
+            #     send_message(name=participant.name, phone_num=participant.phone_num)
             
             return Response({
                 'status':'success',

@@ -17,12 +17,13 @@ import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, True))
+print('base', BASE_DIR)
 
-# env_file = os.path.join(BASE_DIR, '.env')
-# if os.path.exists(env_file):
-#     environ.Env.read_env(
-#         env_file=env_file
-#     )
+env_file = os.path.join(BASE_DIR, '.env')
+if os.path.exists(env_file):
+    environ.Env.read_env(
+        env_file=env_file
+    )
 
 SECRET_KEY = env('KAHLUA_BE_SECRET_KEY')
 STATE = env('KAHLUA_BE_STATE')
@@ -42,9 +43,9 @@ SENDER_PHONE_NUM = env('SENDER_PHONE_NUM')
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
 # Application definition
 AUTH_USER_MODEL = 'users.User'
