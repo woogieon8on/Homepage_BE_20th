@@ -128,7 +128,6 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
             'buyer': '깔루아1',
             'phone_num': '010-1234-5678',
             'member': '3',
-            'price': '15000',
             'name': '깔루아1',
             'phone': '010-1234-5678',
             'name': '깔루아2',
@@ -256,7 +255,7 @@ class OrderCheckoutView(viewsets.ModelViewSet):
                 examples={
                     "application/json": {
                         "status": "success",
-                        "data": {'id': 1}
+                        "data": {'merchant_order_id': '2abcdefghi'}
                     }
                 }
             ),
