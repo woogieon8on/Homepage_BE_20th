@@ -144,6 +144,17 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
             참고로 request body는 json 형식이 아닌 <b>multipart/form-data 형식</b>으로 전달받으므로, 
             리스트 값을 전달하고자 한다면 개별 원소들마다 리스트 필드 이름을 key로 설정하여, 원소 값을 value로 추가해주면 됩니다.<br/>
         ''',
+        request_body=openapi.Schema(
+            '티켓 구매 관련 정보 입력',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'buyer': openapi.Schema('구매자 이름', type=openapi.TYPE_STRING),
+                'phone_num': openapi.Schema('구매자 전화번호', type=openapi.TYPE_NUMBER),
+                'member': openapi.Schema('참석인원', type=openapi.TYPE_INTEGER),
+                'name': openapi.Schema('참석자 이름', type=openapi.TYPE_OBJECT),
+                'phone': openapi.Schema('참석자 전화번호', type=openapi.TYPE_OBJECT)
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
@@ -249,6 +260,14 @@ class OrderCheckoutView(viewsets.ModelViewSet):
             전달된 필드를 기반으로 결제 정보를 저장할 때 사용하는 OrderTransaction 객체를 생성합니다.<br/>
             이때 merchant_order_id을 생성하여 반환받아서 다음 절차에 사용합니다.<br/>          
         ''',
+        request_body=openapi.Schema(
+            '결제 정보 객체 생성',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'reservation_id': openapi.Schema('예약번호', type=openapi.TYPE_STRING),
+                'amount': openapi.Schema('가격', type=openapi.TYPE_NUMBER),
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
@@ -307,6 +326,16 @@ class OrderValidationView(viewsets.ModelViewSet):
         operation_description='''
             결제 검증까지 마치고 나면 order_complete 뷰를 호출해 주문이 완료되었음을 표시하고 전체 절차를 마칩니다.<br/>
         ''',
+        request_body=openapi.Schema(
+            '결제 검증',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'reservation_id': openapi.Schema('예약번호', type=openapi.TYPE_STRING),
+                'merchant_id': openapi.Schema('주문번호', type=openapi.TYPE_STRING),
+                'imp_id': openapi.Schema('아임포트 id', type=openapi.TYPE_STRING),
+                'amount': openapi.Schema('가격', type=openapi.TYPE_NUMBER),
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
