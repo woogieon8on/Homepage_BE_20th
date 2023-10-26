@@ -205,7 +205,7 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         operation_description='''
             전달된 쿼리 파라미터에 해당하는 예매 정보를 반환합니다.<br/>
             결제를 하고 나서 주문이 완료되었다는 화면을 표시할 때 사용됩니다.<br/>
-            또는 예매 티켓을 조회하는 경우 예매번호를 입력하여 예매 내역을 확인합니다.<br/>
+            또는 예매 티켓을 조회하는 경우 예매번호와 구매자 전화번호를 입력하여 예매 내역을 확인합니다.<br/>
             주문 번호에 해당하는 결제 완료 화면을 보여줍니다.<br/>
         ''',
         responses={
@@ -232,7 +232,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
     def get(self, request):
         try:
             request_id = request.query_params.get('reservation_id')
-            order = GeneralTicket.objects.get(reservation_id=request_id)
+            request_num = request.query_params.get('phone_num')
+            order = GeneralTicket.objects.get(reservation_id=request_id, phone_num=request_num)
             serializer = self.get_serializer(order)
             
             return Response({
