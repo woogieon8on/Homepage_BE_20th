@@ -28,7 +28,6 @@ class GeneralTicket(TimeStampedModel):  #일반 티켓
     phone_num = models.CharField(max_length=20, unique=True)   # 핸드폰 번호
     member = models.PositiveIntegerField(default=1)   # 예매 인원
     price = models.PositiveIntegerField(default=0)
-    reservation_id = models.CharField(max_length=10, unique=True, null=True)   # 주문번호(예약번호)
 
     def __str__(self):
         return 'Order {}/{}'.format(self.buyer, self.id)
@@ -42,6 +41,7 @@ class FreshmanTicket(TimeStampedModel):  #신입생 티켓
     major = models.CharField(max_length=30)
     student_id = models.CharField(max_length=10)
     meeting = models.BooleanField(default=False)
+    reservation_id = models.CharField(max_length=10, unique=True, null=True)   # 주문번호(예약번호)
 
     def __str__(self):
         return 'Order {}.{}'.format(self.buyer, self.id)

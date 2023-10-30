@@ -44,13 +44,31 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
             신입생의 경우 1인 1매로 제한되므로 예매자의 정보만 입력받고 있습니다.<br/>
             신입생 확인을 위해 예매 시 학과와 학번을 입력 받고, 현장에서 학생증으로 학과와 학번이 맞는지 확인합니다.<br/>
         ''',
+        request_body=openapi.Schema(
+            '신입생 티켓 정보 입력',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'buyer': openapi.Schema('구매자 이름', type=openapi.TYPE_STRING),
+                'phone_num': openapi.Schema('구매자 전화번호', type=openapi.TYPE_NUMBER),
+                'major': openapi.Schema('전공', type=openapi.TYPE_INTEGER),
+                'student_id': openapi.Schema('학번', type=openapi.TYPE_STRING),
+                'meeting': openapi.Schema('소모임 참석여부', type=openapi.TYPE_BOOLEAN)
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
                 examples={
                     "application/json": {
                         "status": "success",
-                        "data": {'id': 1}
+                        "data": {'id': 1,
+                                 'buyer': '신입생1',
+                                 'phone_num': '010-1234-5678',
+                                 'major': '컴퓨터공학과',
+                                 'student_id': 'C411111',
+                                 'meeting': True,
+                                 'reservation_id': '12345ABCDE'
+                                }
                     }
                 }
             ),
@@ -77,8 +95,16 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_id='신입생 예매 취소',
         operation_description='''
-            student_id에 해당하는 freshman tickets을 삭제하면서 예매를 취소한다. <br/>
+            student_id와 reservation_id가 모두 일치하는 경우 해당 freshman tickets을 삭제하면서 예매를 취소한다. <br/>
         ''',
+        request_body=openapi.Schema(
+            '신입생 티켓 삭제',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'student_id': openapi.Schema('학번', type=openapi.TYPE_STRING),
+                'reservation_id': openapi.Schema('예약번호', type=openapi.TYPE_STRING)
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
@@ -97,9 +123,11 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
 
     def delete(self, request, *args, **kwargs):   
         student_id = request.POST.get('student_id')
+        reservation_id = request.POST.get('reservation_id')
 
         try:
-            student = FreshmanTicket.objects.get(student_id=student_id)
+            student = FreshmanTicket.objects.get(student_id=student_id, reservation_id=reservation_id)
+            print('stu:', student)
             student.delete()
 
             return Response({
@@ -166,7 +194,6 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                                  'phone_num':'010-1234-5678',
                                  'member':'3',
                                  'price':'15000',
-                                 'reservation_id': 'ABCDE12345',
                                 },
                     }
                 }
@@ -219,7 +246,6 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                                  'phone_num':'010-1234-5678',
                                  'member':'3',
                                  'price':'15000',
-                                 'reservation_id': 'ABCDE12345',
                                 }
                     }
                 }
@@ -231,15 +257,21 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
     )
     def get(self, request):
         try:
-            request_id = request.query_params.get('reservation_id')
+            request_id = request.query_params.get('merchant_order_id')
             request_num = request.query_params.get('phone_num')
-            order = GeneralTicket.objects.get(reservation_id=request_id, phone_num=request_num)
-            serializer = self.get_serializer(order)
+            request = OrderTransaction.objects.get(merchant_order_id=request_id)
+            if request_num == request.order.phone_num:
+                serializer = self.get_serializer(request.order)
+            
+                return Response({
+                        'status': 'success',
+                        'data': serializer.data
+                    }, status=status.HTTP_200_OK)
             
             return Response({
-                    'status': 'success',
-                    'data': serializer.data
-                }, status=status.HTTP_200_OK)
+                'status':'error',
+                'message': 'check your phone number'
+            }, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({
                 'status': 'error',
@@ -265,7 +297,7 @@ class OrderCheckoutView(viewsets.ModelViewSet):
             '결제 정보 객체 생성',
             type=openapi.TYPE_OBJECT,
             properties={
-                'reservation_id': openapi.Schema('예약번호', type=openapi.TYPE_STRING),
+                'id': openapi.Schema('예약번호', type=openapi.TYPE_STRING),
                 'amount': openapi.Schema('가격', type=openapi.TYPE_NUMBER),
             }
         ),
@@ -286,8 +318,8 @@ class OrderCheckoutView(viewsets.ModelViewSet):
     )
 
     def post(self, request, *args, **kwargs):
-        reservation_id = request.POST.get('reservation_id')
-        order = GeneralTicket.objects.get(reservation_id=reservation_id)
+        id = request.POST.get('id')
+        order = GeneralTicket.objects.get(id=id)
         amount = request.POST.get('amount')
 
         try:
@@ -316,7 +348,6 @@ class OrderValidationView(viewsets.ModelViewSet):
     
     class Meta:
         examples = {
-            'reservation_id': 'ABCDE12345',
             'merchant_id': '2abcdefghi',
             'imp_id': '',
             'amount': 15000,
@@ -331,7 +362,6 @@ class OrderValidationView(viewsets.ModelViewSet):
             '결제 검증',
             type=openapi.TYPE_OBJECT,
             properties={
-                'reservation_id': openapi.Schema('예약번호', type=openapi.TYPE_STRING),
                 'merchant_id': openapi.Schema('주문번호', type=openapi.TYPE_STRING),
                 'imp_id': openapi.Schema('아임포트 id', type=openapi.TYPE_STRING),
                 'amount': openapi.Schema('가격', type=openapi.TYPE_NUMBER),
@@ -354,9 +384,9 @@ class OrderValidationView(viewsets.ModelViewSet):
     )
 
     def post(self, request, *args, **kwargs):
-        reservation_id = request.POST.get('reservation_id')
-        order = GeneralTicket.objects.get(reservation_id=reservation_id)
-        merchant_id = request.POST.get('merchant_id')
+        # reservation_id = request.POST.get('reservation_id')
+        # order = GeneralTicket.objects.get(reservation_id=reservation_id)
+        merchant_order_id = request.POST.get('merchant_order_id')
         imp_id = request.POST.get('imp_id')
         amount = request.POST.get('amount')
 
@@ -364,8 +394,7 @@ class OrderValidationView(viewsets.ModelViewSet):
         
         try:
             trans = OrderTransaction.objects.get(
-                order=order,
-                merchant_order_id=merchant_id,
+                merchant_order_id=merchant_order_id,
                 amount=amount,
             )
         except:
@@ -376,7 +405,7 @@ class OrderValidationView(viewsets.ModelViewSet):
             trans.success = True
             trans.save()
 
-            send_message(name=order.buyer, phone_num=order.phone_num)
+            send_message(name=trans.order.buyer, phone_num=trans.order.phone_num)
 
             # 참석자 전원에게 문자 보내는 경우
             # for participant in participants:
