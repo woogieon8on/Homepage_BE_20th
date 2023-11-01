@@ -62,7 +62,8 @@ PROJECT_APPS = [
     "users",
     "tickets",
     "core",
-    "application"
+    "application",
+    "kahlua_admin",
 ]
 THIRD_APPS = [
     'rest_framework',
