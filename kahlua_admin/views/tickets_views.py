@@ -14,7 +14,7 @@ class TicketsPagination(PageNumberPagination):
 
 class FreshmanViewSet(viewsets.ModelViewSet):
     """
-        모든 티켓 예약 리스트 가져오기
+        새내기 티켓 예약 리스트 가져오기
     """
     queryset = FreshmanTicket.objects.all().order_by('id')  #예약 순서대로 정렬
     serializer_class = FreshmanSerializer
