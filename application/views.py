@@ -64,7 +64,6 @@ class ApplyCreateView(CreateAPIView):
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            print('save')
 
             return Response({
                 'status': 'Success',
