@@ -122,8 +122,8 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
     )
     def get(self, request, *args, **kwargs):
         try:
-            student_id = request.query_params.get('student_id')
-            request = FreshmanTicket.objects.get(student_id=student_id)
+            reservation_id = request.query_params.get('reservation_id')
+            request = FreshmanTicket.objects.get(reservation_id=reservation_id)
             serializer = self.get_serializer(request)
 
             return Response({
