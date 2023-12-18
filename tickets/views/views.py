@@ -167,11 +167,11 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
     )
 
     def delete(self, request, *args, **kwargs):   
-        student_id = request.POST.get('student_id')
+        # student_id = request.POST.get('student_id')
         reservation_id = request.POST.get('reservation_id')
 
         try:
-            student = FreshmanTicket.objects.get(student_id=student_id, reservation_id=reservation_id)
+            student = FreshmanTicket.objects.get(reservation_id=reservation_id)
             print('stu:', student)
             student.delete()
 
@@ -225,7 +225,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                 'phone_num': openapi.Schema('구매자 전화번호', type=openapi.TYPE_NUMBER),
                 'member': openapi.Schema('참석인원', type=openapi.TYPE_INTEGER),
                 'name': openapi.Schema('참석자 이름', type=openapi.TYPE_OBJECT),
-                'phone': openapi.Schema('참석자 전화번호', type=openapi.TYPE_OBJECT)
+                'phone': openapi.Schema('참석자 전화번호', type=openapi.TYPE_OBJECT),
+                'payment': openapi.Schema('결제 수단', type=openapi.TYPE_STRING),
             }
         ),
         responses={
@@ -239,6 +240,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                                  'phone_num':'010-1234-5678',
                                  'member':'3',
                                  'price':'15000',
+                                 'payment': '계좌이체',
+                                 'status': False,
                                 },
                     }
                 }
@@ -249,13 +252,16 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         }
     )
     def create(self, request, *args, **kwargs):
-        order_info = request.data
+        order_info = request.POST.copy()
         name_list = order_info.getlist('name')
         phone_list = order_info.getlist('phone')
+
+        if order_info['payment'] == '카카오페이':
+            order_info['status'] = True
         
         serializer = self.get_serializer(data=order_info)
         if serializer.is_valid(raise_exception=True):
-            new_order = serializer.save()         
+            new_order = serializer.save()
 
             mem = dict(zip(name_list, phone_list))
 

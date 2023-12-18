@@ -28,6 +28,8 @@ class GeneralTicket(TimeStampedModel):  #일반 티켓
     phone_num = models.CharField(max_length=20, unique=True)   # 핸드폰 번호
     member = models.PositiveIntegerField(default=1)   # 예매 인원
     price = models.PositiveIntegerField(default=0)
+    status = models.BooleanField(default=False)  # 결제 상태 (True: 결제 완료, False: 입금 대기)
+    payment = models.CharField(max_length=6, default='')  # 결제 수단 (계좌이체/카카오페이)
 
     def __str__(self):
         return 'Order {}/{}'.format(self.buyer, self.id)
