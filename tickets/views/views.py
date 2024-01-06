@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from functools import partial
 from django import forms
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 
 from rest_framework import viewsets, status
@@ -96,7 +97,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_id='신입생 예매 확인',
         operation_description='''
-            query parameter로 입력받은 student_id에 해당하는 티켓을 보여줍니다. <br/>
+            query parameter로 입력받은 reservation_id에 해당하는 티켓을 보여줍니다. <br/>
         ''',
         responses={
             "200": openapi.Response(
@@ -283,7 +284,7 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         operation_description='''
             전달된 쿼리 파라미터에 해당하는 예매 정보를 반환합니다.<br/>
             결제를 하고 나서 주문이 완료되었다는 화면을 표시할 때 사용됩니다.<br/>
-            또는 예매 티켓을 조회하는 경우 예매번호와 구매자 전화번호를 입력하여 예매 내역을 확인합니다.<br/>
+            또는 예매 티켓을 조회하는 경우 예매번호(merchant_order_id)를 입력하여 예매 내역을 확인합니다.<br/>
             주문 번호에 해당하는 결제 완료 화면을 보여줍니다.<br/>
         ''',
         responses={
@@ -309,20 +310,14 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
     def get(self, request):
         try:
             request_id = request.query_params.get('merchant_order_id')
-            request_num = request.query_params.get('phone_num')
             request = OrderTransaction.objects.get(merchant_order_id=request_id)
-            if request_num == request.order.phone_num:
-                serializer = self.get_serializer(request.order)
-            
-                return Response({
-                        'status': 'success',
-                        'data': serializer.data
-                    }, status=status.HTTP_200_OK)
+            serializer = self.get_serializer(request.order)
             
             return Response({
-                'status':'error',
-                'message': 'check your phone number'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'status': 'Success',
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        
         except:
             return Response({
                 'status': 'error',
