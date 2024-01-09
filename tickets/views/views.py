@@ -257,8 +257,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         name_list = order_info.getlist('name')
         phone_list = order_info.getlist('phone')
 
-        if order_info['payment'] == '카카오페이':
-            order_info['status'] = True
+        # if order_info['payment'] == '카카오페이':
+        #     order_info['status'] = True
         
         serializer = self.get_serializer(data=order_info)
         if serializer.is_valid(raise_exception=True):
@@ -462,19 +462,26 @@ class OrderValidationView(viewsets.ModelViewSet):
 
 
 class CancelTicketView(viewsets.ModelViewSet):
+    permission_classes = (AllowAny, )
 
     class Meta:
         examples = {
-            'order_id': 1,
-            'amount': 15000,
+            'merchant_order_id': '12345abcde',
         }
 
     @swagger_auto_schema(
         operation_id='일반 예매 취소하는 View',
         operation_description='''
-            order_id에 해당하는 general tickets를 삭제하고 participants 해당 인원 모두 삭제한다.
+            merchant_order_id에 해당하는 general tickets를 삭제하고 participants 해당 인원 모두 삭제한다.
             또한 order transactions 모두 삭제하면서 예매를 취소한다. <br/>
         ''',
+        request_body=openapi.Schema(
+            '티켓 취소',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'merchant_order_id': openapi.Schema('주문번호', type=openapi.TYPE_STRING),
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
@@ -492,20 +499,21 @@ class CancelTicketView(viewsets.ModelViewSet):
     )
 
     def delete(self, request, *args, **kwargs):
-        reservation_id = request.POST.get('reservation_id')
-        order = GeneralTicket.objects.get(reservation_id=reservation_id)
-        amount = request.POST.get('amount')
+        merchant_order_id = request.POST.get('merchant_order_id')
+        order = OrderTransaction.objects.get(merchant_order_id=merchant_order_id)
         
         try:
-            trans = OrderTransaction.objects.get(
-                order=order,
-                amount=amount,
+            trans = GeneralTicket.objects.get(
+                id=order.order.id,
             )
         except:
             trans = None
 
         if trans is not None:
+            participant = trans.participants.all()
+            participant.delete()
             order.delete() 
+            trans.delete()
             
             return Response({
                 'status':'success',
