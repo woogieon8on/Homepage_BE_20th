@@ -48,12 +48,7 @@ SENDER_PHONE_NUM = env('SENDER_PHONE_NUM')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-<<<<<<< HEAD
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', 
-                 ".ap-northeast-2.compute.amazonaws.com", ".kahluaband.com"]
-=======
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com"]
->>>>>>> dc4dd0ef09452d301a714d2274ad8dea82967b6f
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com", ".kahluaband.com"]
 
 # Application definition
 AUTH_USER_MODEL = 'users.User'
