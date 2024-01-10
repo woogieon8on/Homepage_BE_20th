@@ -26,7 +26,7 @@ class ApplyForm(TimeStampedModel):
     name = models.CharField(max_length=20)   # 지원자 이름
     phone_num = models.CharField(max_length=13, null=True)   # 전화번호('-'없는 상태로 입력받기)
     birthdate = models.CharField(max_length=8, blank=True)   # 생년월일d('-'없는 상태로 입력받기)
-    gender = models.CharField(choices=GENDER_CHOICES, max_length=20, blank=True)   # 성별
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=20)   # 성별
     address = models.CharField(max_length=200)   # 거주지
     first_preference = models.CharField(choices=PREFERENCE_CHOICES, max_length=20)   # 1지망
     second_preference = models.CharField(choices=PREFERENCE_CHOICES, max_length=20)   # 2지망

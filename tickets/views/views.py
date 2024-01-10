@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from functools import partial
 from django import forms
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 
 from rest_framework import viewsets, status
@@ -90,7 +91,52 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
         
         return Response({
             'status':'error',
-        }, status=status.HTTP_400_BAD_REQUEST)     
+        }, status=status.HTTP_400_BAD_REQUEST) 
+
+
+    @swagger_auto_schema(
+        operation_id='신입생 예매 확인',
+        operation_description='''
+            query parameter로 입력받은 reservation_id에 해당하는 티켓을 보여줍니다. <br/>
+        ''',
+        responses={
+            "200": openapi.Response(
+                description="OK",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "data": {'id': 1,
+                             'buyer': '신입생1',
+                             'phone_num': '010-1234-5678',
+                             'major': '컴퓨터공학과',
+                             'student_id': 'C411111',
+                             'meeting': True,
+                             'reservation_id': '12345ABCDE'
+                            }
+                    }
+                }
+            ),
+            "400": openapi.Response(
+                description="Bad Request",
+            ),
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+            reservation_id = request.query_params.get('reservation_id')
+            request = FreshmanTicket.objects.get(reservation_id=reservation_id)
+            serializer = self.get_serializer(request)
+
+            return Response({
+                'status': 'Success',
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        
+        except:
+            return Response({
+                'status': 'error',
+            }, status=status.HTTP_400_BAD_REQUEST)
+    
     
     @swagger_auto_schema(
         operation_id='신입생 예매 취소',
@@ -122,11 +168,11 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
     )
 
     def delete(self, request, *args, **kwargs):   
-        student_id = request.POST.get('student_id')
+        # student_id = request.POST.get('student_id')
         reservation_id = request.POST.get('reservation_id')
 
         try:
-            student = FreshmanTicket.objects.get(student_id=student_id, reservation_id=reservation_id)
+            student = FreshmanTicket.objects.get(reservation_id=reservation_id)
             print('stu:', student)
             student.delete()
 
@@ -180,7 +226,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                 'phone_num': openapi.Schema('구매자 전화번호', type=openapi.TYPE_NUMBER),
                 'member': openapi.Schema('참석인원', type=openapi.TYPE_INTEGER),
                 'name': openapi.Schema('참석자 이름', type=openapi.TYPE_OBJECT),
-                'phone': openapi.Schema('참석자 전화번호', type=openapi.TYPE_OBJECT)
+                'phone': openapi.Schema('참석자 전화번호', type=openapi.TYPE_OBJECT),
+                'payment': openapi.Schema('결제 수단', type=openapi.TYPE_STRING),
             }
         ),
         responses={
@@ -194,6 +241,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
                                  'phone_num':'010-1234-5678',
                                  'member':'3',
                                  'price':'15000',
+                                 'payment': '계좌이체',
+                                 'status': False,
                                 },
                     }
                 }
@@ -204,9 +253,12 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         }
     )
     def create(self, request, *args, **kwargs):
-        order_info = request.data
+        order_info = request.POST.copy()
         name_list = order_info.getlist('name')
         phone_list = order_info.getlist('phone')
+
+        # if order_info['payment'] == '카카오페이':
+        #     order_info['status'] = True
         
         serializer = self.get_serializer(data=order_info)
         if serializer.is_valid(raise_exception=True):
@@ -232,7 +284,7 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
         operation_description='''
             전달된 쿼리 파라미터에 해당하는 예매 정보를 반환합니다.<br/>
             결제를 하고 나서 주문이 완료되었다는 화면을 표시할 때 사용됩니다.<br/>
-            또는 예매 티켓을 조회하는 경우 예매번호와 구매자 전화번호를 입력하여 예매 내역을 확인합니다.<br/>
+            또는 예매 티켓을 조회하는 경우 예매번호(merchant_order_id)를 입력하여 예매 내역을 확인합니다.<br/>
             주문 번호에 해당하는 결제 완료 화면을 보여줍니다.<br/>
         ''',
         responses={
@@ -258,20 +310,14 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
     def get(self, request):
         try:
             request_id = request.query_params.get('merchant_order_id')
-            request_num = request.query_params.get('phone_num')
             request = OrderTransaction.objects.get(merchant_order_id=request_id)
-            if request_num == request.order.phone_num:
-                serializer = self.get_serializer(request.order)
-            
-                return Response({
-                        'status': 'success',
-                        'data': serializer.data
-                    }, status=status.HTTP_200_OK)
+            serializer = self.get_serializer(request.order)
             
             return Response({
-                'status':'error',
-                'message': 'check your phone number'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'status': 'Success',
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        
         except:
             return Response({
                 'status': 'error',
@@ -283,7 +329,6 @@ class OrderCheckoutView(viewsets.ModelViewSet):
 
     class Meta:
         examples = {
-            'reservation_id': 'ABCDE12345',
             'amount': 15000,
         }
 
@@ -417,19 +462,26 @@ class OrderValidationView(viewsets.ModelViewSet):
 
 
 class CancelTicketView(viewsets.ModelViewSet):
+    permission_classes = (AllowAny, )
 
     class Meta:
         examples = {
-            'order_id': 1,
-            'amount': 15000,
+            'merchant_order_id': '12345abcde',
         }
 
     @swagger_auto_schema(
         operation_id='일반 예매 취소하는 View',
         operation_description='''
-            order_id에 해당하는 general tickets를 삭제하고 participants 해당 인원 모두 삭제한다.
+            merchant_order_id에 해당하는 general tickets를 삭제하고 participants 해당 인원 모두 삭제한다.
             또한 order transactions 모두 삭제하면서 예매를 취소한다. <br/>
         ''',
+        request_body=openapi.Schema(
+            '티켓 취소',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'merchant_order_id': openapi.Schema('주문번호', type=openapi.TYPE_STRING),
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
@@ -447,20 +499,21 @@ class CancelTicketView(viewsets.ModelViewSet):
     )
 
     def delete(self, request, *args, **kwargs):
-        reservation_id = request.POST.get('reservation_id')
-        order = GeneralTicket.objects.get(reservation_id=reservation_id)
-        amount = request.POST.get('amount')
+        merchant_order_id = request.POST.get('merchant_order_id')
+        order = OrderTransaction.objects.get(merchant_order_id=merchant_order_id)
         
         try:
-            trans = OrderTransaction.objects.get(
-                order=order,
-                amount=amount,
+            trans = GeneralTicket.objects.get(
+                id=order.order.id,
             )
         except:
             trans = None
 
         if trans is not None:
+            participant = trans.participants.all()
+            participant.delete()
             order.delete() 
+            trans.delete()
             
             return Response({
                 'status':'success',

@@ -16,6 +16,8 @@ class GeneralTicketDetailSerializer(serializers.ModelSerializer):
             'phone_num',
             'member',
             'price',
+            'status',
+            'payment',
         ]
 
     def create(self, validated_data):
