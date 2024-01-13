@@ -22,11 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, True))
 print('base', BASE_DIR)
 
-env_file = os.path.join(BASE_DIR, '.env')
-if os.path.exists(env_file):
-    environ.Env.read_env(
-        env_file=env_file
-    )
+# env_file = os.path.join(BASE_DIR, '.env')
+# if os.path.exists(env_file):
+#    environ.Env.read_env(
+#        env_file=env_file
+#    )
 
 SECRET_KEY = env('KAHLUA_BE_SECRET_KEY')
 STATE = env('KAHLUA_BE_STATE')
@@ -48,7 +48,7 @@ SENDER_PHONE_NUM = env('SENDER_PHONE_NUM')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com"]
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com", ".kahluaband.com"]
 
 # Application definition
 AUTH_USER_MODEL = 'users.User'
@@ -95,7 +95,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'kahluaproject.urls'
@@ -165,6 +165,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
