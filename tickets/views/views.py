@@ -176,9 +176,6 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
             student = FreshmanTicket.objects.get(reservation_id=reservation_id)
             print('stu:', student)
 
-            canceled_ticket_count = student.count
-            FreshmanTicket.objects.filter(count__gt=canceled_ticket_count).update(count=F('count') - 1)
-
             
             student.delete()
 
@@ -517,10 +514,6 @@ class CancelTicketView(viewsets.ModelViewSet):
 
         if trans is not None:
             participant = trans.participants.all()
-
-            canceled_ticket_count = trans.count
-            GeneralTicket.objects.filter(count__gt=canceled_ticket_count).update(count=F('count') - 1)
-
             participant.delete()
             order.delete() 
             trans.delete()
