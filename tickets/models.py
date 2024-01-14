@@ -50,7 +50,6 @@ class FreshmanTicket(TimeStampedModel):  #신입생 티켓
         return 'Order {}.{}'.format(self.buyer, self.id)
 
 
-
 class OrderTransactionManager(models.Manager):
     use_for_related_fields = True
 

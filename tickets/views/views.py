@@ -3,7 +3,6 @@ from functools import partial
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from django.db.models import F
 
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -175,8 +174,6 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
         try:
             student = FreshmanTicket.objects.get(reservation_id=reservation_id)
             print('stu:', student)
-
-            
             student.delete()
 
             return Response({
