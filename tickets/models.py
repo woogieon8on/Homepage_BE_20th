@@ -30,16 +30,9 @@ class GeneralTicket(TimeStampedModel):  #일반 티켓
     price = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=False)  # 결제 상태 (True: 결제 완료, False: 입금 대기)
     payment = models.CharField(max_length=6, default='')  # 결제 수단 (계좌이체/카카오페이)
-    count = models.PositiveBigIntegerField(default=0) # 예매자 count
 
     def __str__(self):
         return 'Order {}/{}'.format(self.buyer, self.id)
-    
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            latest_ticket = GeneralTicket.objects.order_by('-created').first()
-            self.count = latest_ticket.count + 1 if latest_ticket else 1
-        super().save(*args, **kwargs)
     
     class Meta:
         ordering = ['-created']
@@ -51,17 +44,11 @@ class FreshmanTicket(TimeStampedModel):  #신입생 티켓
     student_id = models.CharField(max_length=10, unique=True)
     meeting = models.BooleanField(default=False)
     reservation_id = models.CharField(max_length=10, unique=True, null=True)   # 주문번호(예약번호)
-    count = models.PositiveBigIntegerField(default=0) # 예매자 count
-
+    count = models.PositiveIntegerField(default=1) # 신입생 티켓 매수 (=1)
 
     def __str__(self):
         return 'Order {}.{}'.format(self.buyer, self.id)
-    
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            latest_ticket = FreshmanTicket.objects.order_by('-created').first()
-            self.count = latest_ticket.count + 1 if latest_ticket else 1
-        super().save(*args, **kwargs)
+
 
 
 class OrderTransactionManager(models.Manager):

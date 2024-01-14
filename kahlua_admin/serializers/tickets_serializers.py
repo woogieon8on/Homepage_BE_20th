@@ -10,6 +10,7 @@ class FreshmanAdminSerializer(serializers.ModelSerializer):
             'id',
             'buyer',
             'phone_num',
+            'count',
             'major',
             'student_id',
             'meeting',

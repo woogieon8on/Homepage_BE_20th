@@ -3,6 +3,7 @@ from functools import partial
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.db.models import F
 
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -174,6 +175,11 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
         try:
             student = FreshmanTicket.objects.get(reservation_id=reservation_id)
             print('stu:', student)
+
+            canceled_ticket_count = student.count
+            FreshmanTicket.objects.filter(count__gt=canceled_ticket_count).update(count=F('count') - 1)
+
+            
             student.delete()
 
             return Response({
@@ -259,8 +265,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
 
         # if order_info['payment'] == '카카오페이':
         #     order_info['status'] = True
-        
-        serializer = self.get_serializer(data=order_info)
+
+        serializer = self.get_serializer(data=order_info) 
         if serializer.is_valid(raise_exception=True):
             new_order = serializer.save()
 
@@ -511,6 +517,10 @@ class CancelTicketView(viewsets.ModelViewSet):
 
         if trans is not None:
             participant = trans.participants.all()
+
+            canceled_ticket_count = trans.count
+            GeneralTicket.objects.filter(count__gt=canceled_ticket_count).update(count=F('count') - 1)
+
             participant.delete()
             order.delete() 
             trans.delete()
