@@ -107,3 +107,22 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
             'status': 'Success',
             'data': serializer.data,
         }, status=status.HTTP_200_OK)
+
+
+class AllTicketListViewSet(viewsets.ModelViewSet):
+    general = OrderTransaction.objects.all().order_by('-id')
+    freshman = FreshmanTicket.objects.all().order_by('-id')
+
+    serializer_class_General = GeneralTicketAdminListSerializer
+    serializer_class_Freshman = FreshmanAdminSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = TicketsPagination
+
+    def list(self, request, *args, **kwargs):
+        general = self.serializer_class_General(self.general, many=True)
+        freshman = self.serializer_class_Freshman(self.freshman, many=True)
+        data = general.data + freshman.data
+        return Response({
+            'status':'Success',
+            'data': data
+        }, status=status.HTTP_200_OK)
