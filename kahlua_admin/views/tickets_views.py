@@ -1,5 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from itertools import chain
+from operator import attrgetter
 from rest_framework import viewsets, status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
@@ -110,18 +112,32 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
 
 
 class AllTicketListViewSet(viewsets.ModelViewSet):
-    general = OrderTransaction.objects.all().order_by('-id')
-    freshman = FreshmanTicket.objects.all().order_by('-id')
-
     serializer_class_General = GeneralTicketAdminListSerializer
     serializer_class_Freshman = FreshmanAdminSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = TicketsPagination
 
     def list(self, request, *args, **kwargs):
-        general = self.serializer_class_General(self.general, many=True)
-        freshman = self.serializer_class_Freshman(self.freshman, many=True)
-        data = general.data + freshman.data
+        general = OrderTransaction.objects.all()
+        freshman = FreshmanTicket.objects.all()
+
+        combined_data = sorted(
+            chain(general, freshman),
+            key=attrgetter('created'),  #'create_at'의 속성으로 정렬
+            reverse=True
+        )
+
+        data = []
+        for item in combined_data:
+            if isinstance(item, OrderTransaction):
+                serializer = self.serializer_class_General(item)
+            elif isinstance(item, FreshmanTicket):
+                serializer = self.serializer_class_Freshman(item)
+            else:
+                continue
+
+            data.append(serializer.data)
+
         return Response({
             'status':'Success',
             'data': data
