@@ -11,3 +11,9 @@ class ApplyFormCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return ApplyForm.objects.create(**validated_data)
+
+
+class ApplyFormCompleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplyForm
+        fields = '__all__'
