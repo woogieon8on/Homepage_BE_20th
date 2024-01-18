@@ -35,6 +35,26 @@ class ApplyCreateView(CreateAPIView):
         operation_description='''
             지원서를 작성합니다. 생년월일의 경우 '0000-00-00'의 형태를 맞춰줘야 합니다.<br/>
         ''',
+        request_body=openapi.Schema(
+            '지원서 작성',
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'name': openapi.Schema('지원자 성함', type=openapi.TYPE_STRING),
+                'phone_num': openapi.Schema('지원자 전화번호', type=openapi.TYPE_NUMBER),
+                'birthdate': openapi.Schema('생년월일', type=openapi.TYPE_STRING),
+                'gender': openapi.Schema('성별', type=openapi.TYPE_STRING, enum=['남성', '여성']),
+                'address': openapi.Schema('거주지', type=openapi.TYPE_STRING),
+                'major': openapi.Schema('전공학과', type=openapi.TYPE_STRING, enum=['컴퓨터공학과', '자율전공학과']),
+                'first_preference': openapi.Schema('1지망', type=openapi.TYPE_STRING, enum=['보컬', '드럼', '기타', '베이스', '신디(피아노)']),
+                'second_preference': openapi.Schema('2지망', type=openapi.TYPE_STRING, enum=['보컬', '드럼', '기타', '베이스', '신디(피아노)']),
+                'experience_and_reason': openapi.Schema('지원세션 경력과 이유', type=openapi.TYPE_STRING),
+                'play_instrument': openapi.Schema('다룰 줄 아는 악기', type=openapi.TYPE_STRING),
+                'motive': openapi.Schema('지원동기', type=openapi.TYPE_STRING),
+                'finish_time': openapi.Schema('수업 끝나는 시간', type=openapi.TYPE_STRING),
+                'meeting': openapi.Schema('뒷풀이 참석 여부', type=openapi.TYPE_BOOLEAN),
+                'readiness': openapi.Schema('면접 전 각오', type=openapi.TYPE_STRING)
+            }
+        ),
         responses={
             "200": openapi.Response(
                 description="OK",
