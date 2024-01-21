@@ -259,8 +259,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
 
         # if order_info['payment'] == '카카오페이':
         #     order_info['status'] = True
-        
-        serializer = self.get_serializer(data=order_info)
+
+        serializer = self.get_serializer(data=order_info) 
         if serializer.is_valid(raise_exception=True):
             new_order = serializer.save()
 

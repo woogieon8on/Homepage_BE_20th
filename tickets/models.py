@@ -44,6 +44,7 @@ class FreshmanTicket(TimeStampedModel):  #신입생 티켓
     student_id = models.CharField(max_length=10, unique=True)
     meeting = models.BooleanField(default=False)
     reservation_id = models.CharField(max_length=10, unique=True, null=True)   # 주문번호(예약번호)
+    count = models.PositiveIntegerField(default=1) # 신입생 티켓 매수 (=1)
 
     def __str__(self):
         return 'Order {}.{}'.format(self.buyer, self.id)

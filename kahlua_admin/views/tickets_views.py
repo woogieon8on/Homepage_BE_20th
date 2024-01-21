@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from itertools import chain
 from operator import attrgetter
@@ -8,7 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from tickets.models import FreshmanTicket, OrderTransaction, Participant
+from tickets.models import FreshmanTicket, GeneralTicket, OrderTransaction, Participant
 from ..serializers.tickets_serializers import FreshmanAdminSerializer, GeneralTicketAdminListSerializer
 
 
@@ -36,13 +37,16 @@ class FreshmanViewSet(viewsets.ModelViewSet):
                     "application/json": {
                         "status": "success",
                         "data": {
-                            "id": 1,
-                            "buyer": "kahlua",
-                            "phone_num": "01012345678",
-                            "major": "컴퓨터공학과",
-                            "student_id": "C41111",
-                            "meeting": True
-                        },
+                            "total_count": 1,
+                            "tickets": {
+                                "id": 1,
+                                "buyer": "kahlua",
+                                "phone_num": "01012345678",
+                                "major": "컴퓨터공학과",
+                                "student_id": "C41111",
+                                "meeting": True
+                            },
+                        }
                     }
                 }
             ),
@@ -56,11 +60,17 @@ class FreshmanViewSet(viewsets.ModelViewSet):
         order_name = request.GET.get('name', False)
         if order_name:
             order = FreshmanTicket.objects.all().order_by('buyer')
+
+        total_count = FreshmanTicket.objects.aggregate(count_sum=Sum('count'))['count_sum']
+
         serializer = self.get_serializer(order, many=True)
 
         return Response({
             'status': 'Success',
-            'data': serializer.data,
+            'data': {
+                'total_count': total_count,
+                'tickets': serializer.data,
+            },
         }, status=status.HTTP_200_OK)
     
 
@@ -83,13 +93,16 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
                     "application/json": {
                         "status": "success",
                         "data": {
-                            "id": 1,
-                            "buyer": "kahlua",
-                            "phone_num": "01012345678",
-                            "member": 2,
-                            "merchant_order_id": "734ea4eadf",
-                            "transaction_status": "paid"
-                        },
+                            "total_member": 1,
+                            "tickets": {
+                                "id": 1,
+                                "buyer": "kahlua",
+                                "phone_num": "01012345678",
+                                "member": 2,
+                                "merchant_order_id": "734ea4eadf",
+                                "transaction_status": "paid"
+                            },
+                        }
                     }
                 }
             ),
@@ -103,11 +116,17 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
         order_name = request.GET.get('name', False)
         if order_name:
             order = OrderTransaction.objects.all().order_by('order__buyer')
+
+        total_member = GeneralTicket.objects.aggregate(member_sum=Sum('member'))['member_sum']
+
         serializer = self.get_serializer(order, many=True)
 
         return Response({
             'status': 'Success',
-            'data': serializer.data,
+            'data': {
+                'total_member': total_member,
+                'tickets': serializer.data,
+            },
         }, status=status.HTTP_200_OK)
 
 
