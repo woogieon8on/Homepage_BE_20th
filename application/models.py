@@ -38,7 +38,7 @@ class ApplyForm(TimeStampedModel):
     major = models.CharField(choices=MAJOR_CHOICES, max_length=6, default='')   # 전공학과
     first_preference = models.CharField(choices=PREFERENCE_CHOICES, max_length=20)   # 1지망
     second_preference = models.CharField(choices=PREFERENCE_CHOICES, max_length=20)   # 2지망
-    exprience_and_reason = models.TextField(default='')   # 지원세션의 경력과 이유
+    experience_and_reason = models.TextField(default='')   # 지원세션의 경력과 이유
     play_instrument = models.TextField()   # 다룰 줄 아는 악기
     motive = models.TextField()   # 지원 동기
     finish_time = models.TextField(default='')   # 끝나는 시간
