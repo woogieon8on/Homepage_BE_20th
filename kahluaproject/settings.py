@@ -46,7 +46,7 @@ SENDER_PHONE_NUM = env('SENDER_PHONE_NUM')
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com", ".kahluaband.com"]
 
@@ -199,7 +199,7 @@ SIMPLE_JWT = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000' ,'http://localhost:8000']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000' ,'http://localhost:8000', 'https://kahluaband.com', 'https://www.kahluaband.com']
 CORS_ALLOW_CREDENTIALS = True
 
 
