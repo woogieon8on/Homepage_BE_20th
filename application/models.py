@@ -44,6 +44,7 @@ class ApplyForm(TimeStampedModel):
     finish_time = models.TextField(default='')   # 끝나는 시간
     meeting = models.BooleanField(default=False)   # 뒷풀이 참석 여부
     readiness = models.TextField(default='')   # 면접 전 각오
+    count = models.PositiveIntegerField(default=1) # 지원서 개수 (=1)
 
     def __str__(self):
         return self.name

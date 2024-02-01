@@ -37,14 +37,16 @@ class FreshmanViewSet(viewsets.ModelViewSet):
                     "application/json": {
                         "status": "success",
                         "data": {
-                            "total_count": 1,
+                            "total_freshman": 1,
                             "tickets": {
                                 "id": 1,
                                 "buyer": "kahlua",
                                 "phone_num": "01012345678",
+                                "count": 1,
                                 "major": "컴퓨터공학과",
                                 "student_id": "C41111",
-                                "meeting": True
+                                "meeting": True,
+                                "reservation_id": "04LQMHA43W"
                             },
                         }
                     }
@@ -61,14 +63,14 @@ class FreshmanViewSet(viewsets.ModelViewSet):
         if order_name:
             order = FreshmanTicket.objects.all().order_by('buyer')
 
-        total_count = FreshmanTicket.objects.aggregate(count_sum=Sum('count'))['count_sum']
+        total_freshman = FreshmanTicket.objects.aggregate(count_sum=Sum('count'))['count_sum']
 
         serializer = self.get_serializer(order, many=True)
 
         return Response({
             'status': 'Success',
             'data': {
-                'total_count': total_count,
+                'total_freshman': total_freshman,
                 'tickets': serializer.data,
             },
         }, status=status.HTTP_200_OK)
@@ -83,7 +85,7 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_id='일반 티켓 예매 정보 가져오기',
         operation_description='''
-            모든 티켓을 리스트로 불러옵니다.<br/>
+            모든 일반 티켓을 리스트로 불러옵니다.<br/>
             기본 정렬은 최신이 가장 위로 올라오도록 정렬됩니다. query params에서 name을 True로 설정하면 이름 순으로 정렬됩니다.<br/>
         ''',
         responses={
@@ -93,7 +95,7 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
                     "application/json": {
                         "status": "success",
                         "data": {
-                            "total_member": 1,
+                            "total_general": 1,
                             "tickets": {
                                 "id": 1,
                                 "buyer": "kahlua",
@@ -117,14 +119,14 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
         if order_name:
             order = OrderTransaction.objects.all().order_by('order__buyer')
 
-        total_member = GeneralTicket.objects.aggregate(member_sum=Sum('member'))['member_sum']
+        total_general = GeneralTicket.objects.aggregate(member_sum=Sum('member'))['member_sum']
 
         serializer = self.get_serializer(order, many=True)
 
         return Response({
             'status': 'Success',
             'data': {
-                'total_member': total_member,
+                'total_general': total_general,
                 'tickets': serializer.data,
             },
         }, status=status.HTTP_200_OK)
@@ -136,6 +138,50 @@ class AllTicketListViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = TicketsPagination
 
+    @swagger_auto_schema(
+        operation_id='모든 티켓 예매 정보 가져오기',
+        operation_description='''
+            모든 티켓을 리스트로 불러옵니다.<br/>
+            기본 정렬은 최신이 가장 위로 올라오도록 정렬됩니다. query params에서 name을 True로 설정하면 이름 순으로 정렬됩니다.<br/>
+        ''',
+        responses={
+            "200": openapi.Response(
+                description="OK",
+                examples={
+                    "application/json": {
+                        "status": "Success",
+                        "data": {
+                            "total_tickets": 4,
+                            "tickets": [
+                                {
+                                    "id": 1,
+                                    "buyer": "깔루아",
+                                    "phone_num": "01012345678",
+                                    "count": 1,
+                                    "major": "컴퓨터공학과",
+                                    "student_id": "c111111",
+                                    "meeting": True,
+                                    "reservation_id": "04LQMHA43W"
+                                },
+                                {
+                                    "id": 2,
+                                    "buyer": "kahlua",
+                                    "phone_num": "01011001234",
+                                    "member": 3,
+                                    "merchant_order_id": "d561280932",
+                                    "transaction_status": "paid"
+                                },
+                            ]
+                        }
+                    }
+                }
+            ),
+            "400": openapi.Response(
+                description="Bad Request",
+            ),
+        }
+    )
+
     def list(self, request, *args, **kwargs):
         general = OrderTransaction.objects.all()
         freshman = FreshmanTicket.objects.all()
@@ -145,7 +191,7 @@ class AllTicketListViewSet(viewsets.ModelViewSet):
             key=attrgetter('created'),  #'create_at'의 속성으로 정렬
             reverse=True
         )
-
+        
         data = []
         for item in combined_data:
             if isinstance(item, OrderTransaction):
@@ -156,8 +202,15 @@ class AllTicketListViewSet(viewsets.ModelViewSet):
                 continue
 
             data.append(serializer.data)
+        
+        total_freshman = FreshmanTicket.objects.aggregate(count_sum=Sum('count'))['count_sum']
+        total_general = GeneralTicket.objects.aggregate(member_sum=Sum('member'))['member_sum']
+        total_tickets = total_freshman + total_general
 
         return Response({
             'status':'Success',
-            'data': data
+            'data' : {
+                'total_tickets': total_tickets,
+                'tickets': data,
+            },
         }, status=status.HTTP_200_OK)
