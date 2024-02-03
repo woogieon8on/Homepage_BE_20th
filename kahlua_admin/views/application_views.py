@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Sum
 
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
@@ -39,19 +39,28 @@ class ApplicationViewSet(viewsets.ModelViewSet):
                     "application/json": {
                         "status": "success",
                         "data": {
-                            "id": 1,
-                            "created": "2024-01-10T12:32:09.198136Z",
-                            "updated": "2024-01-10T12:32:09.198178Z",
-                            "name": "kahlua",
-                            "phone_num": "01012345678",
-                            "birthdate": "20050101",
-                            "gender": "남성",
-                            "address": "서울 마포구",
-                            "first_preference": "보컬",
-                            "second_preference": "드럼",
-                            "play_instrument": "통기타",
-                            "motive": "깔루아 들어가고 싶습니다!",
-                        },
+                            "total_member": 1,
+                            "apply_forms": {
+                                "id": 1,
+                                "created": "2024-01-10T12:32:09.198136Z",
+                                "updated": "2024-01-10T12:32:09.198178Z",
+                                "name": "kahlua",
+                                "phone_num": "01012345678",
+                                "birthdate": "20050101",
+                                "gender": "남성",
+                                "address": "서울 마포구",
+                                "major": "컴퓨터공학과",
+                                "first_preference": "보컬",
+                                "second_preference": "드럼",
+                                "experience_and_reason": "고등학교 때 무대에서 노래를 불러봤습니다.",
+                                "play_instrument": "통기타",
+                                "motive": "깔루아 들어가고 싶습니다!",
+                                "finish_time": "5시",
+                                "meeting": True,
+                                "readiness": "성실히 참여하겠습니다!",
+                                "count": 1
+                            },
+                        }
                     }
                 }
             ),
@@ -87,9 +96,14 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             # first_preference와 name 설정 안 하면 전체를 최신순으로 정렬
             order = order.order_by('-id')
 
+        total_member = ApplyForm.objects.aggregate(count_sum=Sum('count'))['count_sum']
+
         serializer = self.get_serializer(order, many=True)
 
         return Response({
             'status': 'Success',
-            'data': serializer.data,
+            'data': {
+                'total_member': total_member,
+                'apply_forms': serializer.data,
+            },
         }, status=status.HTTP_200_OK)

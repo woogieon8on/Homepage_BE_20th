@@ -14,6 +14,7 @@ class FreshmanAdminSerializer(serializers.ModelSerializer):
             'major',
             'student_id',
             'meeting',
+            'reservation_id',
         ]
 
 
