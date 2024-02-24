@@ -48,7 +48,7 @@ SENDER_PHONE_NUM = env('SENDER_PHONE_NUM')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com", ".kahluaband.com"]
+ALLOWED_HOSTS = ['*', '0.0.0.0', '127.0.0.1', 'localhost', ".ap-northeast-2.compute.amazonaws.com", ".kahluaband.com", '76.76.21.21']
 
 # Application definition
 AUTH_USER_MODEL = 'users.User'
@@ -79,6 +79,7 @@ THIRD_APPS = [
     'drf_yasg',
     'debug_toolbar',
     'corsheaders',
+    'ebhealthcheck.apps.EBHealthCheckConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_APPS
@@ -90,7 +91,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -164,7 +165,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
@@ -199,9 +200,40 @@ SIMPLE_JWT = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000' ,'http://localhost:8000', 'https://kahluaband.com', 'https://www.kahluaband.com']
+# CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000' ,'http://localhost:8000', 'https://kahluaband.com', 'https://www.kahluaband.com']
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_TRUSTED_ORIGINS = ['https://kahluaband.com', 'https://www.kahluaband.com', 'http://localhost:8000', 'http://127.0.0.1:3000', 'https://api.kahluaband.com']
+
+CSRF_COOKIE_NAME = 'XSRF-TOKEN'
+CSRF_HEADER_NAME = 'X-XSRF-TOKEN'
+
+CORS_ALLOW_HEADERS = (
+    'access-control-allow-credentials',
+    'access-control-allow-origin',
+    'access-control-request-method',
+    'access-control-request-headers',
+    'accept',
+    'accept-encoding',
+    'accept-language',
+    'authorization',
+    'connection',
+    'content-type',
+    'dnt',
+    'credentials',
+    'host',
+    'origin',
+    'user-agent',
+    'X-CSRFToken',
+    'csrftoken',
+    'x-requested-with',
+)
+
+SECURE_SSL_REDIRECT = True
 
 # JWT_AUTH = {
 #     'JWT_PAYLOAD_HANDLER':
