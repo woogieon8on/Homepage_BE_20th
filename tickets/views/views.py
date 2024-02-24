@@ -4,6 +4,9 @@ from django import forms
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -191,7 +194,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
 
         
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class GeneralTicketOrderView(viewsets.ModelViewSet):
     queryset = GeneralTicket.objects.all()
     serializer_class = GeneralTicketDetailSerializer
