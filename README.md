@@ -1,3 +1,6 @@
+![Kahlua (1)](https://github.com/kahluaband/Homepage_FE_20th/assets/109282927/0dc8d6f6-08e0-4339-ab41-a0adf53e2b0a)
+🧷 https://kahluaband.com
+
 # KAHLUA_BE
 **KAHLUA BAND website** backend using django restframework
 
@@ -24,15 +27,6 @@
 * SQLite
 
 ## 주요 기능
-**로그인**
-
-* ID 찾기, PW 찾기
-* 소셜 로그인 (카카오, 네이버 등)
-* 로그인 시 쿠키(Cookie) 및 세션(Session) 생성
-
-
-**회원가입**
-
 
 **공연 예매하기**
 
@@ -47,7 +41,6 @@
 **동아리 소개**
 
 * 동아리 사진, 활동 소개
-* 모집 세션 소개
 
 
 **동아리 영상**
