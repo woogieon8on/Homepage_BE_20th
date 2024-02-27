@@ -23,12 +23,12 @@ from drf_yasg import openapi
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include('users.urls')),
-    path('api/users/', include('dj_rest_auth.urls')),
-    path('api/users/', include('allauth.urls')),
-    path('api/tickets/', include('tickets.urls')),
-    path('api/application/', include('application.urls')),
-    path('api/kahlua_admin/', include('kahlua_admin.urls')),
+    path('users/', include('users.urls')),
+    path('users/', include('dj_rest_auth.urls')),
+    path('users/', include('allauth.urls')),
+    path('tickets/', include('tickets.urls')),
+    path('application/', include('application.urls')),
+    path('kahlua_admin/', include('kahlua_admin.urls')),
 ]
 
 # API 문서에 작성될 소개 내용
