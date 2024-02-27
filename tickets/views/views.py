@@ -28,6 +28,7 @@ class SetPartialMixin:
         return partial(serializer_class, partial=True)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class FreshmanTicketOrderView(viewsets.ModelViewSet):
     queryset = FreshmanTicket.objects.all()
     serializer_class = FreshmanTicketDetailSerializer
@@ -194,7 +195,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
 
         
 
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class GeneralTicketOrderView(viewsets.ModelViewSet):
     queryset = GeneralTicket.objects.all()
     serializer_class = GeneralTicketDetailSerializer
@@ -327,6 +328,7 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
     
 
+@method_decorator(csrf_exempt, name='dispatch')
 class OrderCheckoutView(viewsets.ModelViewSet):
     permission_classes = (AllowAny, )
 
@@ -391,6 +393,7 @@ class OrderCheckoutView(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class OrderValidationView(viewsets.ModelViewSet):
     permission_classes = (AllowAny, )
     
@@ -464,6 +467,7 @@ class OrderValidationView(viewsets.ModelViewSet):
             },status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CancelTicketView(viewsets.ModelViewSet):
     permission_classes = (AllowAny, )
 
