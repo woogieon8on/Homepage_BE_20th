@@ -194,7 +194,11 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
 
         
 
+<<<<<<< HEAD
 @method_decorator(csrf_exempt, name='dispatch')
+=======
+# @method_decorator(csrf_exempt, name='dispatch')
+>>>>>>> 74a355303a352d2631c5c1fd1da673f8cdc38d2f
 class GeneralTicketOrderView(viewsets.ModelViewSet):
     queryset = GeneralTicket.objects.all()
     serializer_class = GeneralTicketDetailSerializer

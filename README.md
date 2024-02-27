@@ -1,3 +1,6 @@
+![Kahlua (1)](https://github.com/kahluaband/Homepage_FE_20th/assets/109282927/0dc8d6f6-08e0-4339-ab41-a0adf53e2b0a)
+🧷 https://kahluaband.com
+
 # KAHLUA_BE
 **KAHLUA BAND website** backend using django restframework
 
@@ -8,21 +11,22 @@
 
 따라서, 저희는 깔루아 공연을 보러오시는 관객분들이 조금 더 편하게 예매를 하실 수 있도록 예매 사이트를 만들었습니다. 예매 뿐만 아니라 동아리를 홍보하고 신입생 지원기간에는 지원도 사이트에서 함께 진행할 수 있도록 하였습니다.
 
+## Backend Member 
+
+<div align="left">
+
+| **강지윤** | **박상욱** | **심수연**  |
+| :------: |  :------: | :------:  |
+| [<img src="https://avatars.githubusercontent.com/u/112507402?v=4" height=200 width=200> <br/> @kjiyun](https://github.com/kjiyun) | [<img src="https://avatars.githubusercontent.com/u/140885810?v=4" height=200 width=200> <br/> @woogieon8on](https://github.com/woogieon8on) | [<img src="https://avatars.githubusercontent.com/u/81095801?v=4" height=200 width=200> <br/> @letthem](https://github.com/letthem)|
+
+</div>
+
 ## 개발 환경
 * Python
 * Django RestFrameWork
 * SQLite
 
 ## 주요 기능
-**로그인**
-
-* ID 찾기, PW 찾기
-* 소셜 로그인 (카카오, 네이버 등)
-* 로그인 시 쿠키(Cookie) 및 세션(Session) 생성
-
-
-**회원가입**
-
 
 **공연 예매하기**
 
@@ -37,7 +41,6 @@
 **동아리 소개**
 
 * 동아리 사진, 활동 소개
-* 모집 세션 소개
 
 
 **동아리 영상**

@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -11,7 +13,7 @@ from drf_yasg.utils import swagger_auto_schema
 from application.models import ApplyForm
 from application.serializers import ApplyFormCreateSerializer, ApplyFormCompleteSerializer
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class ApplyCreateView(CreateAPIView):
     model = ApplyForm
     serializer_class = ApplyFormCreateSerializer
@@ -95,7 +97,7 @@ class ApplyCreateView(CreateAPIView):
             'status':'error'
         }, status=status.HTTP_400_BAD_REQUEST)
     
-
+@method_decorator(csrf_exempt, name='dispatch')
 class ApplyCompleteView(APIView):
     model = ApplyForm
     serializer_class = ApplyFormCompleteSerializer
