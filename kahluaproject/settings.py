@@ -233,7 +233,7 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
 )
 
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
 
 # JWT_AUTH = {
 #     'JWT_PAYLOAD_HANDLER':
