@@ -42,7 +42,7 @@ class FreshmanTicket(TimeStampedModel):  #신입생 티켓
     phone_num = models.CharField(max_length=20, unique=True)
     major = models.CharField(max_length=30)
     student_id = models.CharField(max_length=10, unique=True)
-    meeting = models.BooleanField(default=False)
+    meeting = models.CharField(max_length=10, default='불참')
     reservation_id = models.CharField(max_length=10, unique=True, null=True)   # 주문번호(예약번호)
     count = models.PositiveIntegerField(default=1) # 신입생 티켓 매수 (=1)
 

@@ -57,7 +57,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
                 'phone_num': openapi.Schema('구매자 전화번호', type=openapi.TYPE_NUMBER),
                 'major': openapi.Schema('전공', type=openapi.TYPE_INTEGER),
                 'student_id': openapi.Schema('학번', type=openapi.TYPE_STRING),
-                'meeting': openapi.Schema('소모임 참석여부', type=openapi.TYPE_BOOLEAN)
+                'meeting': openapi.Schema('소모임 참석여부', type=openapi.TYPE_STRING)
             }
         ),
         responses={
@@ -71,7 +71,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
                                  'phone_num': '010-1234-5678',
                                  'major': '컴퓨터공학과',
                                  'student_id': 'C411111',
-                                 'meeting': True,
+                                 'meeting': '3/5',
                                  'reservation_id': '12345ABCDE'
                                 }
                     }
@@ -195,7 +195,7 @@ class FreshmanTicketOrderView(viewsets.ModelViewSet):
 
         
 
-@method_decorator(csrf_exempt, name='dispatch')
+# @method_decorator(csrf_exempt, name='dispatch')
 class GeneralTicketOrderView(viewsets.ModelViewSet):
     queryset = GeneralTicket.objects.all()
     serializer_class = GeneralTicketDetailSerializer
