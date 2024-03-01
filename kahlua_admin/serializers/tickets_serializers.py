@@ -22,6 +22,7 @@ class GeneralTicketAdminListSerializer(serializers.ModelSerializer):
     buyer = serializers.SerializerMethodField()
     phone_num = serializers.SerializerMethodField()
     member = serializers.SerializerMethodField()
+    participants = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderTransaction
@@ -33,6 +34,7 @@ class GeneralTicketAdminListSerializer(serializers.ModelSerializer):
             'member',
             'merchant_order_id',
             'transaction_status',
+            'participants',
         ]
 
     def get_buyer(self, obj):
@@ -55,3 +57,12 @@ class GeneralTicketAdminListSerializer(serializers.ModelSerializer):
         '''
         ticket = obj.order
         return ticket.member
+    
+    def get_participants(self, obj):
+        '''
+            구매자가 구매한 티켓의 참석자를 알려주기 위한 함수
+        '''
+        participants_list = []
+        for participant in obj.order.participants.all():
+            participants_list.append({'name': participant.name, 'phone_num': participant.phone_num})
+        return participants_list

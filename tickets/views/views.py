@@ -258,8 +258,8 @@ class GeneralTicketOrderView(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         order_info = request.POST.copy()
-        name_list = order_info.getlist('name')
-        phone_list = order_info.getlist('phone')
+        name_list = order_info.getlist('name[]')
+        phone_list = order_info.getlist('phone[]')
 
         # if order_info['payment'] == '카카오페이':
         #     order_info['status'] = True

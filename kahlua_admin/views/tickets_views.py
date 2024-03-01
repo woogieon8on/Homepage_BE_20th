@@ -102,7 +102,8 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
                                 "phone_num": "01012345678",
                                 "member": 2,
                                 "merchant_order_id": "734ea4eadf",
-                                "transaction_status": "paid"
+                                "transaction_status": "paid",
+                                "participants": "[{'name': '깔루아', 'phone_num': '01012345678'}, {'name': '깔루아', 'phone_num': '01012345678'}]",
                             },
                         }
                     }
@@ -115,7 +116,7 @@ class GeneralTicketListViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         order = self.get_queryset()
-        order_name = request.GET.get('name', False)
+        order_name = request.GET.get('name', False)  # 이름순 정렬
         if order_name:
             order = OrderTransaction.objects.all().order_by('order__buyer')
 
